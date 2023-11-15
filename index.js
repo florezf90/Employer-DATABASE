@@ -286,7 +286,7 @@ function updatemployerole() {
           let call = "SELECT id FROM role WHERE title = ?;";
           db.query(call, answer.emplorole, function (err, result) {
             if (err) throw err;
-            let roleID = result[0].id;
+            let RoleID = result[0].id;
             const empName = answer.EnpName.split(" ");
             let call =
               "SELECT id FROM employee WHERE first_name = ? AND last_name = ?;";
@@ -295,7 +295,7 @@ function updatemployerole() {
               if (err) throw err;
               let empID = result[0].id;
               let call = "UPDATE employee SET role_id = ? WHERE id = ?;";
-              db.query(call, [roleID, empID], function (err, result) {
+              db.query(call, [RoleID, empID], function (err, result) {
                 if (err) throw err;
                 console.log("updated properly the employee(s) role");
                 init();
