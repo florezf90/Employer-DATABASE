@@ -3,15 +3,16 @@ const db = require("./config/connections");
 require("console.table");
 
 db.connect((err) => {
-    if (err) throw err;
-})
+  if (err) throw err;
+});
 function init() {
-  try { console.log('tryout');
-      inquirer
+  try {
+    console.log("tryout");
+    inquirer
       .prompt({
         type: "list",
         message: "What would you like to do??",
-        name: "UserChoice",
+        name: "userchoice",
         choices: [
           "View ALL Employees",
           "ADD Employee",
@@ -28,36 +29,36 @@ function init() {
       })
       .then((answer) => {
         console.log(answer);
-        switch (answer.UserChoice) {
+        switch (answer.userchoice) {
           case "View ALL Employees":
-            ViewAllEmployees();
+            viewallemployees();
             break;
           case "ADD Employee":
-            AddEmployee();
+            addemployee();
             break;
           case "Update Employee role":
-            Updatemployerole();
+            updatemployerole();
             break;
           case "View All Roles":
-            ViewAllroles();
+            viewallroles();
             break;
           case "ADD role":
-            AddRole();
+            addrole();
             break;
           case "View All departments":
-            ViewAlldepartments();
+            viewalldepartments();
             break;
           case "Add department":
-            Addepartment();
+            addepartment();
             break;
           case "Delete Department":
-            DeleteDepartment();
+            deletedepartment();
             break;
           case "Delete Role":
-            DeleteRole();
+            deleterole();
             break;
           case "Delete Employee":
-            Deletemployee();
+            deleteemployee();
             break;
           case "Quit":
             // Close the db connection and exit the application
@@ -72,7 +73,7 @@ function init() {
 
 // the following blocks of code will allow us to watch each table
 
-function ViewAlldepartments() {
+function viewalldepartments() {
   let call = "SELECT * FROM department ORDER BY name;";
   db.query(call, function (err, result) {
     if (err) throw err;
@@ -81,7 +82,7 @@ function ViewAlldepartments() {
   });
 }
 
-function ViewAllroles() {
+function viewallroles() {
   let call =
     "SELECT role.id, title, department.name as department, salary FROM role JOIN department ON role.department_id = department.id;";
 
@@ -92,7 +93,7 @@ function ViewAllroles() {
   });
 }
 
-function ViewAllEmployees() {
+function viewallemployees() {
   let call =
     'SELECT employee.id, employee,first_name, employee_lastname, role.title, department.name as department, role.salary, CONCAT(boss.first_name, " ", boss.last_name) AS manager FROM employee JOIN role ON employe.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee as boss ON employee.manager_id = boss.id;';
   db.query(call, function (err, result) {
@@ -104,7 +105,7 @@ function ViewAllEmployees() {
 
 // functions to add data
 
-function Addepartment() {
+function addepartment() {
   inquirer
     .prompt({
       type: "input",
@@ -121,7 +122,7 @@ function Addepartment() {
     });
 }
 
-function AddRole() {
+function addrole() {
   let call = "SELECT name FROM department;";
 
   db.query(call, function (err, result) {
@@ -172,13 +173,13 @@ function AddRole() {
   });
 }
 
-function AddEmployee() {
+function addemployee() {
   let call = "SELECT title FROM role";
   db.query(call, function (err, result) {
     if (err) throw err;
-    let emploRole = [];
+    let emplorole = [];
     result.forEach((role) => {
-      emploRole.push(role.title);
+      emplorole.push(role.title);
     });
     let call =
       'SELECT CONCAT(first_name, " ", last_name) as manager FROM employee;';
@@ -203,7 +204,7 @@ function AddEmployee() {
           {
             type: "list",
             message: "what is the employee(s) role?",
-            choices: emploRole,
+            choices: emplorole,
             name: "role",
           },
           {
@@ -222,28 +223,24 @@ function AddEmployee() {
             let call =
               "SELECT id FROM employee WHERE first_name = ? AND last_name = ?;";
 
-            db.query(
-              call,
-              [MngrName[0], MngrName[1]],
-              function (err, result) {
-                if (err) throw err;
-                managerID = result[0].id;
-                let call =
-                  "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);";
+            db.query(call, [MngrName[0], MngrName[1]], function (err, result) {
+              if (err) throw err;
+              managerID = result[0].id;
+              let call =
+                "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);";
 
-                db.query(
-                  call,
-                  [answer.name, answer.LastName, roleID, , managerID],
-                  function (err, result) {
-                    if (err) throw err;
-                    console.log(
-                      `\n Properly Added ${answer.name} ${answer.LastName} to the db.\n`
-                    );
-                    init();
-                  }
-                );
-              }
-            );
+              db.query(
+                call,
+                [answer.name, answer.LastName, roleID, , managerID],
+                function (err, result) {
+                  if (err) throw err;
+                  console.log(
+                    `\n Properly Added ${answer.name} ${answer.LastName} to the db.\n`
+                  );
+                  init();
+                }
+              );
+            });
           });
         });
     });
@@ -252,13 +249,13 @@ function AddEmployee() {
 
 //  Code used to update the db
 
-function Updatemployerole() {
+function updatemployerole() {
   let call = "SELECT title FROM role;";
   db.query(call, function (err, result) {
     if (err) throw err;
-    let emploRole = [];
+    let emplorole = [];
     result.forEach((role) => {
-      emploRole.push(role.title);
+      emplorole.push(role.title);
     });
 
     let call =
@@ -281,40 +278,36 @@ function Updatemployerole() {
             type: "list",
             message:
               "What role do you want to asing to the selected employee??",
-            choices: emploRole,
+            choices: emplorole,
             name: "enploRole",
           },
         ])
         .then((answer) => {
           let call = "SELECT id FROM role WHERE title = ?;";
-          db.query(call, answer.emploRole, function (err, result) {
+          db.query(call, answer.emplorole, function (err, result) {
             if (err) throw err;
-            let RoleID = result[0].id;
+            let roleID = result[0].id;
             const empName = answer.EnpName.split(" ");
             let call =
               "SELECT id FROM employee WHERE first_name = ? AND last_name = ?;";
 
-            db.query(
-              call,
-              [empName[0], empName[1]],
-              function (err, result) {
+            db.query(call, [empName[0], empName[1]], function (err, result) {
+              if (err) throw err;
+              let empID = result[0].id;
+              let call = "UPDATE employee SET role_id = ? WHERE id = ?;";
+              db.query(call, [roleID, empID], function (err, result) {
                 if (err) throw err;
-                let empID = result[0].id;
-                let call = "UPDATE employee SET role_id = ? WHERE id = ?;";
-                db.query(call, [RoleID, empID], function (err, result) {
-                  if (err) throw err;
-                  console.log("updated properly the employee(s) role");
-                  init();
-                });
-              }
-            );
+                console.log("updated properly the employee(s) role");
+                init();
+              });
+            });
           });
         });
     });
   });
 }
 
-function DeleteDepartment() {
+function deletedepartment() {
   inquirer
     .prompt({
       type: "input",
@@ -332,7 +325,7 @@ function DeleteDepartment() {
     });
 }
 
-function DeleteRole() {
+function deleterole() {
   inquirer
     .prompt({
       type: "input",
@@ -350,7 +343,7 @@ function DeleteRole() {
     });
 }
 
-function Deletemployee() {
+function deleteemployee() {
   inquirer
     .prompt({
       type: "input",
