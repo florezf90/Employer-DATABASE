@@ -18,8 +18,9 @@
   "homepage": "https://github.com/florezf90/Employer-DATABASE#readme",
   "dependencies": {
     "console.table": "^0.10.0",
-    "dotenv": "^16.3.1",
+    "dotenv": "^8.2.0",
     "inquirer": "^8.2.4",
     "mysql2": "^3.6.3"
-  }
+  },
+  "keywords": []
 }
