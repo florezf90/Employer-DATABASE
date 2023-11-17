@@ -2,12 +2,22 @@ const inquirer = require("inquirer");
 const db = require("./config/connections");
 require("console.table");
 
+// Connect to the database and checks for any existing issues
+db.connect((err) => {
+  if (err) {
+    console.error("Error connecting to the database:", err);
+    throw err;
+  }
+  console.log("Connected to the database");
+});
+
 db.connect((err) => {
   if (err) throw err;
 });
+
+// Initialize the application
 function init() {
   try {
-    console.log("tryout");
     inquirer
       .prompt({
         type: "list",
@@ -95,7 +105,7 @@ function viewallroles() {
 
 function viewallemployees() {
   let call =
-    'SELECT employee.id, employee,first_name, employee_lastname, role.title, department.name as department, role.salary, CONCAT(boss.first_name, " ", boss.last_name) AS manager FROM employee JOIN role ON employe.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee as boss ON employee.manager_id = boss.id;';
+    'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name as department, role.salary, CONCAT(boss.first_name, " ", boss.last_name) AS manager FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee as boss ON employee.manager_id = boss.id;';
   db.query(call, function (err, result) {
     if (err) throw err;
     console.table("employees", result);
@@ -194,12 +204,12 @@ function addemployee() {
           {
             type: "input",
             message: "What is the employee(s) first name??",
-            name: "Name",
+            name: "name",
           },
           {
             type: "input",
             message: "what is the employee(s) last name?",
-            name: "LastName",
+            name: "Lastname",
           },
           {
             type: "list",
@@ -225,18 +235,19 @@ function addemployee() {
 
             db.query(call, [MngrName[0], MngrName[1]], function (err, result) {
               if (err) throw err;
-              managerID = result[0].id;
+              let managerID = result[0].id;
               let call =
                 "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);";
 
               db.query(
                 call,
-                [answer.name, answer.LastName, roleID, , managerID],
+                [answer.name, answer.Lastname, roleID, managerID],
                 function (err, result) {
                   if (err) throw err;
                   console.log(
-                    `\n Properly Added ${answer.name} ${answer.LastName} to the db.\n`
+                    `\n Properly Added ${answer.name} to the db.\n`
                   );
+                
                   init();
                 }
               );
@@ -250,54 +261,50 @@ function addemployee() {
 //  Code used to update the db
 
 function updatemployerole() {
-  let call = "SELECT title FROM role;";
-  db.query(call, function (err, result) {
+  let callRoles = "SELECT title FROM role;";
+  db.query(callRoles, function (err, result) {
     if (err) throw err;
-    let emplorole = [];
-    result.forEach((role) => {
-      emplorole.push(role.title);
-    });
+    let emplorole = result.map((role) => role.title);
 
-    let call =
+    let callEmployees =
       'SELECT CONCAT(first_name, " ", last_name) as employee FROM employee;';
-    db.query(call, (err, result) => {
+    db.query(callEmployees, (err, result) => {
       if (err) throw err;
-      let EnpName = [];
-      result.forEach((name) => {
-        EnpName.push(name.employee);
-      });
+      let enpNames = result.map((name) => name.employee);
+
       inquirer
         .prompt([
           {
             type: "list",
             message: "Which employee(s) role do you want to update??",
-            choices: EnpName,
-            name: "EnPName",
+            choices: enpNames,
+            name: "enpName",
           },
           {
             type: "list",
             message:
-              "What role do you want to asing to the selected employee??",
+              "What role do you want to assign to the selected employee??",
             choices: emplorole,
-            name: "enploRole",
+            name: "enpRole",
           },
         ])
         .then((answer) => {
-          let call = "SELECT id FROM role WHERE title = ?;";
-          db.query(call, answer.emplorole, function (err, result) {
+          let callRoleId = `SELECT id FROM role WHERE title = '${answer.enpRole}';`;
+          db.query(callRoleId, function (err, result) {
             if (err) throw err;
-            let RoleID = result[0].id;
-            const empName = answer.EnpName.split(" ");
-            let call =
-              "SELECT id FROM employee WHERE first_name = ? AND last_name = ?;";
+            let roleId = result[0].id;
 
-            db.query(call, [empName[0], empName[1]], function (err, result) {
+            const empName = answer.enpName.split(" ");
+            let callEmpId = `SELECT id FROM employee WHERE first_name = '${empName[0]}' AND last_name = '${empName[1]}';`;
+
+            db.query(callEmpId, function (err, result) {
               if (err) throw err;
               let empID = result[0].id;
-              let call = "UPDATE employee SET role_id = ? WHERE id = ?;";
-              db.query(call, [RoleID, empID], function (err, result) {
+
+              let updateCall = `UPDATE employee SET role_id = ${roleId} WHERE id = ${empID};`;
+              db.query(updateCall, function (err, result) {
                 if (err) throw err;
-                console.log("updated properly the employee(s) role");
+                console.log("Updated employee(s) role successfully");
                 init();
               });
             });
@@ -306,6 +313,7 @@ function updatemployerole() {
     });
   });
 }
+
 
 function deletedepartment() {
   inquirer
@@ -335,7 +343,7 @@ function deleterole() {
     .then((answer) => {
       let sql = "DELETE FROM role WHERE title = ?;";
 
-      db.query(call, answer.title, function (err, result) {
+      db.query(sql, answer.title, function (err, result) {
         if (err) throw err;
         console.log(`\n${answer.title} has been deleted.\n`);
         init();
