@@ -65,7 +65,7 @@ IMPORTANT UPDATE: 11/17/2023 the application has been fixed by approaching the m
 # 🚀 Installation 
 
 
-💿 Deployment demo link: in progress....
+💿 Deployment demo link: https://drive.google.com/file/d/1qh414LuJnsklulfHF_dfRViQetSM4rHA/view
 
 This app is meant to be used in a local envirioment, this is how:
 
