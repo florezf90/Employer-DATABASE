@@ -12,10 +12,17 @@
   # 👩‍💻 About
 
 The present application is being desgined with the intention of showcasing MySQL skills while being able to provide interactivity, by simulating the database of a generic company;
-it's meant to be deployed from the command line where the user is able to interact with the database created.
+and allowing the user to modify core information from the database such as:
+
+* View employees | departments | roles | salaries.
+
+* Delete employees | departments | roles.
+
 
 It's important to mention that  as of 11/15/2023, the present code is not completed at all, there are compatibility issues between inquirer and mysql2 packages, that is making impossible to
 intertact with the database from the command line by running JS code.
+
+IMPORTANT UPDATE: 11/17/2023 the application has been fixed by approaching the missmatch among the passwords for the database and MySQL server.
 
 
 
@@ -76,9 +83,9 @@ For installation onto local machine, clone provided repository by following the 
    
 3.Then, run `node index.js` in order to get started with the prompts and interact with the database.
 
-![web demo photo](./assets/photos/Screenshot%202023-11-15%20001444.png)
+![web demo photo](./assets/photos/datawork.png)
 
-NOTE: the above image is a demo of the generic Database and some new info added;
+NOTE: the above image is a demo of the application working properly in the command line.
 
   
  -----------------------------
@@ -100,7 +107,7 @@ If you have a suggestion that would make this better, don't hesitate to reach me
  [![linkedin](https://img.shields.io/badge/linkedin-blue?style=flat&logo=linkedin&logoColor=white&logoWidth=20&link=https://www.linkedin.com/in/luis-felipe-florez-98403123a/)](https://www.linkedin.com/in/luis-felipe-florez-98403123a/)
 
 
- 💿 Demo: in progress
+ 💿 Demo: https://drive.google.com/file/d/1qh414LuJnsklulfHF_dfRViQetSM4rHA/view
 
 
 -----
